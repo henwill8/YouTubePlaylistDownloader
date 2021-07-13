@@ -31,18 +31,7 @@ playlist = Playlist("https://www.youtube.com/playlist?list=PLvt_sqnmkBu77HMTV9h2
 
 failed = 0
 
-
-def check_special_cases(title):
-    if title == '美波「ライラック」MV':
-        return '"Lilac" - 美波 (Minami) MV'
-    elif title == '美波「カワキヲアメク」MV':
-        return '"Crying for Rain" - 美波 (Minami) MV'
-    elif title == '美波「アメヲマツ、」MV':
-        return '"Waiting for Rain" - 美波 (Minami) MV'
-    elif title == '美波「ホロネス」MV':
-        return '"Hollowness" - 美波 (Minami) MV'
-    else:
-        return title
+specialNameCases = [["美波「ライラック」MV", '"Lilac" - 美波 (Minami) MV'], ['美波「カワキヲアメク」MV', '"Crying for Rain" - 美波 (Minami) MV'], ['美波「アメヲマツ、」MV', '"Waiting for Rain" - 美波 (Minami) MV'], ['美波「ホロネス」MV', '"Hollowness" - 美波 (Minami) MV']]
 
 
 def check_to_download(index, pl):
@@ -58,7 +47,12 @@ def check_to_download(index, pl):
             failed = failed + 1
             return
 
-    title = check_special_cases(video.title)
+    title = video.title
+
+    for item in specialNameCases:
+        if title == item[0]:
+            title = item[1]
+            break
 
     print("Video " + str(index+1) + " of " + str(len(playlist)) + ", " + str(round((index+1) / len(playlist) * 100)) + "%")
     print("Original: " + title + "\nSimplified: " + slugify(title))
