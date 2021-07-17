@@ -93,4 +93,4 @@ for file_name in file_names:
 
 os.rmdir(tempPath)
 
-print("\n\nFINISHED\nFailed: " + str(failed) + " of " + str(len(playlist)) + "\n" + str(round((len(playlist) - failed) / len(playlist) * 100)) + "% Succeeded")
+print("\nFINISHED\nFailed: " + str(failed) + " of " + str(len(playlist)) + "\n" + str(int((len(playlist) - failed) / len(playlist) * 100)) + "% Succeeded")
