@@ -67,8 +67,12 @@ def check_to_download(index, pl):
         try:
             s.download(playlistPath + slugify(title) + ".m4a")
         except:
-            print("ERROR: COULD NOT DOWNLOAD")
-            failed = failed + 1
+            print("Failed to download audio, trying again...")
+            try:
+                s.download(playlistPath + slugify(title) + ".m4a")
+            except:
+                print("Failed to download audio again, skipping...")
+                failed = failed + 1
     print("\n")
 
 
