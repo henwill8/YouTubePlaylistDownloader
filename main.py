@@ -30,12 +30,14 @@ tempPath = "C:\\TempMusic\\"
 playlist = Playlist("https://www.youtube.com/playlist?list=PLvt_sqnmkBu77HMTV9h2JI48u5pT8DnJs")
 
 failed = 0
+failedList = []
 
 specialNameCases = [["美波「ライラック」MV", '"Lilac" - 美波 (Minami) MV'], ['美波「カワキヲアメク」MV', '"Crying for Rain" - 美波 (Minami) MV'], ['美波「アメヲマツ、」MV', '"Waiting for Rain" - 美波 (Minami) MV'], ['美波「ホロネス」MV', '"Hollowness" - 美波 (Minami) MV']]
 
 
 def check_to_download(index, pl):
     global failed
+
     try:
         video = pafy.new(pl[index])
     except:
@@ -45,6 +47,7 @@ def check_to_download(index, pl):
         except:
             print("Failed again, skipping...")
             failed = failed + 1
+            failedList.append(pl[index])
             return
 
     title = video.title
@@ -73,6 +76,7 @@ def check_to_download(index, pl):
             except:
                 print("Failed to download audio again, skipping...")
                 failed = failed + 1
+                failedList.append(pl[index])
     print("\n")
 
 
@@ -98,3 +102,39 @@ for file_name in file_names:
 os.rmdir(tempPath)
 
 print("\nFINISHED\nFailed: " + str(failed) + " of " + str(len(playlist)) + "\n" + str(int((len(playlist) - failed) / len(playlist) * 100)) + "% Succeeded")
+
+print("\nFailed list:")
+for i in range(len(failedList)):
+    try:
+        video = pafy.new(failedList[i])
+    except:
+        print("Failed to get next video object, trying again...")
+        try:
+            video = pafy.new(failedList[i])
+        except:
+            print("Failed again, skipping...")
+
+    title = video.title
+
+    for item in specialNameCases:
+        if title == item[0]:
+            title = item[1]
+            break
+
+    print("Title: " + slugify(title))
+
+    if path.exists(tempPath + slugify(title) + ".m4a"):
+        print("File is already downloaded, moving it to end directory...")
+        os.rename(tempPath + slugify(title) + ".m4a", playlistPath + slugify(title) + ".m4a")
+    else:
+        print("File is not already downloaded, downloading now...")
+        s = video.getbestaudio()
+        print("Size is %s" % s.get_filesize())
+        try:
+            s.download(playlistPath + slugify(title) + ".m4a")
+        except:
+            print("Failed to download audio, trying again...")
+            try:
+                s.download(playlistPath + slugify(title) + ".m4a")
+            except:
+                print("Failed to download audio again, skipping...")
